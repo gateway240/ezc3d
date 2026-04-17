@@ -92,10 +92,18 @@ const std::vector<ezc3d::Vector3d> &
 ezc3d::Modules::ForcePlatform::forces() const {
   return _F;
 }
+const std::vector<ezc3d::Vector3d> &
+ezc3d::Modules::ForcePlatform::forcesRaw() const {
+  return _F_Raw;
+}
 
 const std::vector<ezc3d::Vector3d> &
 ezc3d::Modules::ForcePlatform::moments() const {
   return _M;
+}
+const std::vector<ezc3d::Vector3d> &
+ezc3d::Modules::ForcePlatform::momentsRaw() const {
+  return _M_Raw;
 }
 
 const std::vector<ezc3d::Vector3d> &ezc3d::Modules::ForcePlatform::CoP() const {
@@ -316,7 +324,9 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
   // Get the force and moment from these channel in global reference frame
   size_t nFramesTotal(c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
   _F.resize(nFramesTotal);
+  _F_Raw.resize(nFramesTotal);
   _M.resize(nFramesTotal);
+  _M_Raw.resize(nFramesTotal);
   _CoP.resize(nFramesTotal);
   _Tz.resize(nFramesTotal);
   size_t cmp(0);
@@ -380,7 +390,9 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
           moment_raw += force_raw.cross(_origin);
         }
         _F[cmp] = _refFrame * force_raw;
+        _F_Raw[cmp] = force_raw;
         _M[cmp] = _refFrame * moment_raw;
+        _M_Raw[cmp] = moment_raw;
 
         ezc3d::Vector3d CoP_raw(-moment_raw(1) / force_raw(2),
                                 moment_raw(0) / force_raw(2), 0);

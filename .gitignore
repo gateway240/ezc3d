@@ -1,4 +1,5 @@
 # CMake related files
+.cache
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
