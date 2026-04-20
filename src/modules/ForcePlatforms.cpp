@@ -358,6 +358,7 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
         ++cmp;
       } else if (_type == 2 || _type == 3 || _type == 4) {
         ezc3d::Vector3d force_raw;
+        ezc3d::Vector3d _moment_raw;
         ezc3d::Vector3d moment_raw;
         if (_type == 3) {
           for (size_t j = 0; j < 8; ++j) {
@@ -386,13 +387,14 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
           for (size_t j = 0; j < 3; ++j) {
             force_raw(j) = data_raw(j);
             moment_raw(j) = data_raw(j + 3);
+            _moment_raw(j) = data_raw(j + 3);
           }
           moment_raw += force_raw.cross(_origin);
         }
         _F[cmp] = _refFrame * force_raw;
         _F_Raw[cmp] = force_raw;
         _M[cmp] = _refFrame * moment_raw;
-        _M_Raw[cmp] = moment_raw;
+        _M_Raw[cmp] = _moment_raw;
 
         ezc3d::Vector3d CoP_raw(-moment_raw(1) / force_raw(2),
                                 moment_raw(0) / force_raw(2), 0);
