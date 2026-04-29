@@ -340,7 +340,8 @@ void ezc3d::c3d::readParam(std::fstream &file,
 
         if (run_length >= 4) {
           const std::string split_string = s.substr(start, run_start - start);
-          if (split_string.compare("Snap Lead Sensor 57176.Avanti Sensor 55485.EMG 1")) {
+          if (!split_string.compare("Snap Lead Sensor 57176.Avanti Sensor 55485.EMG 1")) {
+            std::cout << "Found snap lead mangling!" << std::endl;
             param_data_string.emplace_back("Snap Lead Sensor 57176.EMG 1");
             param_data_string.emplace_back("Avanti Sensor 55485.EMG 1");
           } else {
