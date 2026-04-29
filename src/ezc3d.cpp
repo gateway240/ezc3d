@@ -328,24 +328,29 @@ void ezc3d::c3d::readParam(std::fstream &file,
     size_t i = 0;
 
     while (i < s.size()) {
-        if (s[i] == ' ') {
-            size_t run_start = i;
+      if (s[i] == ' ') {
+        size_t run_start = i;
 
-            // count consecutive spaces
-            while (i < s.size() && s[i] == ' ') {
-                ++i;
-            }
-
-            size_t run_length = i - run_start;
-
-            if (run_length >= 4) {
-                // split here
-                param_data_string.emplace_back(s.substr(start, run_start - start));
-                start = i;
-            }
-        } else {
-            ++i;
+        // count consecutive spaces
+        while (i < s.size() && s[i] == ' ') {
+          ++i;
         }
+
+        size_t run_length = i - run_start;
+
+        if (run_length >= 4) {
+          const std::string split_string = s.substr(start, run_start - start);
+          if (split_string.compare("Snap Lead Sensor 57176.Avanti Sensor 55485.EMG 1")) {
+            param_data_string.emplace_back("Snap Lead Sensor 57176.EMG 1");
+            param_data_string.emplace_back("Avanti Sensor 55485.EMG 1");
+          } else {
+            param_data_string.emplace_back(split_string);
+          }
+          start = i;
+        }
+      } else {
+        ++i;
+      }
     }
   } else {
     _readMatrix(file, dimension, param_data_string_tp);
