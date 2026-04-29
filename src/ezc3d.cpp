@@ -16,7 +16,8 @@
 #include "ezc3d/Parameters.h"
 #include "ezc3d/PointsInfo.h"
 #include <algorithm>
-#include <cmath>
+#include <cstddef>
+#include <numeric>
 #include <stdexcept>
 
 void ezc3d::removeTrailingSpaces(std::string &s) {
@@ -315,23 +316,56 @@ void ezc3d::c3d::readParam(std::fstream &file,
                            const std::vector<size_t> &dimension,
                            std::vector<std::string> &param_data_string) {
   std::vector<std::string> param_data_string_tp;
-  _readMatrix(file, dimension, param_data_string_tp);
+  if (dimension[1] == 52 || dimension[1] == 53) {
+    std::cout << "Starting Alex's custom label parsing: " << std::endl;
+    size_t bytes_to_read = dimension[0] * dimension[1];
+    std::cout << "Reading " << bytes_to_read << " from file!" << std::endl;
+    const std::string s =
+        readString(file, bytes_to_read * ezc3d::DATA_TYPE::BYTE);
+    std::cout << "Found header: " << s << std::endl;
 
-  // Vicon c3d stores text length on first dimension, I am not sure if
-  // this is a standard or a custom made stuff.
-  // I implemented it like that for now
-  if (dimension.size() == 1) {
-    if (dimension[0] != 0) {
-      std::string tp;
-      for (size_t j = 0; j < dimension[0]; ++j) {
-        tp += param_data_string_tp[j];
-      }
-      if (!options.getKeepParametersTrailingSpaces())
-        ezc3d::removeTrailingSpaces(tp);
-      param_data_string.push_back(tp);
+    size_t start = 0;
+    size_t i = 0;
+
+    while (i < s.size()) {
+        if (s[i] == ' ') {
+            size_t run_start = i;
+
+            // count consecutive spaces
+            while (i < s.size() && s[i] == ' ') {
+                ++i;
+            }
+
+            size_t run_length = i - run_start;
+
+            if (run_length >= 4) {
+                // split here
+                param_data_string.emplace_back(s.substr(start, run_start - start));
+                start = i;
+            }
+        } else {
+            ++i;
+        }
     }
-  } else
-    _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
+  } else {
+    _readMatrix(file, dimension, param_data_string_tp);
+    // Vicon c3d stores text length on first dimension, I am not sure if
+    // this is a standard or a custom made stuff.
+    // I implemented it like that for now
+    if (dimension.size() == 1) {
+      if (dimension[0] != 0) {
+        std::string tp;
+        for (size_t j = 0; j < dimension[0]; ++j) {
+          tp += param_data_string_tp[j];
+        }
+        if (!options.getKeepParametersTrailingSpaces())
+          ezc3d::removeTrailingSpaces(tp);
+        param_data_string.push_back(tp);
+      }
+    } else {
+      _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
+    }
+  }
 }
 
 void ezc3d::c3d::moveCursorToANewBlock(std::fstream &f) {
