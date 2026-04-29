@@ -195,6 +195,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d,
   // Read name of the group
   _name = c3d.readString(file, static_cast<unsigned int>(
                                    abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE));
+  std::cout << "Calculated _name: " << _name << std::endl;
 
   // number of byte to the next group from here
   int offsetNext(static_cast<int>(
@@ -235,6 +236,11 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d,
 
   // Read the data for the parameters
   if (_data_type == DATA_TYPE::CHAR) {
+    std::cout << "Reading CHAR: " << std::endl;
+    for (auto d : _dimension) {
+        std::cout << d << " ";
+    }
+    std::cout << std::endl;
     c3d.readParam(file, _dimension, _param_data_string);
     // Readjust dimension in case the original c3d put
     // trailling \0

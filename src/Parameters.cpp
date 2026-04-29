@@ -87,6 +87,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
     for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
       _groups.push_back(ezc3d::ParametersNS::GroupNS::Group());
 
+    std::cout << "nbCharInName: " << nbCharInName << std::endl;
     // Group ID always negative for groups
     // and positive parameter of group ID
     if (id < 0) {

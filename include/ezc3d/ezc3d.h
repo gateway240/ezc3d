@@ -286,6 +286,10 @@ protected:
                          const std::vector<std::string> &param_data_in,
                          std::vector<std::string> &param_data_out,
                          size_t idxInParam = 0, size_t currentIdx = 1);
+  size_t _customMatrix(const std::vector<size_t> &dimension,
+                         const std::vector<std::string> &param_data_in,
+                         std::vector<std::string> &param_data_out,
+                         size_t idxInParam = 0, size_t currentIdx = 1);
 
   ///
   /// \brief Internal function to read a string array to a matrix of strings
